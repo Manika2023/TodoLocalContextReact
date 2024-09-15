@@ -10,6 +10,7 @@ export default function TodoForm() {
         e.preventDefault();
         if (!todo) return;
         addTodo({todo,completed:false})
+        // localStorage.setItem("todo",todo)
         setTodo(" ")
     }
 

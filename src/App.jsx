@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState ,useEffect} from 'react'
 import { TodoProvider } from './contexts/TodoContext'
 import TodoForm from './components/TodoForm'
 import TodoItem from './components/TodoItem'
@@ -6,10 +6,18 @@ import TodoItem from './components/TodoItem'
 function App() {
 const [Todos,setTodos]=useState([])
 
-const addTodo=(todo)=>{
-  // add only id with given value and completed false, along with previous value
-  setTodos((prev)=> [{id:Date.now(),...todo},...prev])
-}
+// const addTodo=(todo)=>{
+//   // add only id with given value and completed false, along with previous value
+//  inside setTodo all todo is stored
+//   setTodos((prev)=> [{id:Date.now(),...todo},...prev])
+//   localStorage.setItem("todo",JSON.stringify(todo))
+// }
+
+const addTodo = (todo) => {
+  const newTodos = [{ id: Date.now(), ...todo }, ...Todos];
+  setTodos(newTodos); // Add new todo to state
+  localStorage.setItem('todos', JSON.stringify(newTodos)); // Save updated list in localStorage
+};
 
 // const updateTodo=(id,todo)=>{
 //   // first access all values and the map each todo with given id
@@ -29,9 +37,6 @@ const deleteTodo = (id) => {
   const remainingTodos = Todos.filter((todo) => todo.id !== id);
   // Update the state with the remaining todos
   setTodos(remainingTodos);
-
-  // or
-  // setTodos((prev) => prev.filter((todo) => todo.id !== id))
 };
 
 // toggle if true-> make false and vice versa
@@ -41,15 +46,20 @@ const toggleComplete=(id)=>{
   {...eachTodo,completed:!eachTodo.completed}: eachTodo))
  setTodos(todos)
 
-//  inside setTodo all todo is stored
-
-//  setTodos((prevTodos) =>
-//   prevTodos.map((todo) =>
-//     todo.id === id ? { ...todo, completed: !todo.completed } : todo
-//   )
-// );
-
 }
+
+useEffect(() => {
+  const todos = JSON.parse(localStorage.getItem("todos"))
+
+  if (todos && todos.length > 0) {
+    setTodos(todos)
+  }
+}, [])
+
+// any change in Todos array will save in local storage
+useEffect(() => {
+  localStorage.setItem("todos", JSON.stringify(Todos))
+}, [Todos])
 
   return (
     <TodoProvider value={{Todos,addTodo,updateTodo,deleteTodo,toggleComplete}}>
